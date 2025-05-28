@@ -7,7 +7,14 @@ def load_data():
     return pd.read_csv('diem_thi_thpt_2024.csv')
 
 df = load_data()
-
+tohop_dict = {
+    "KHTN (Tự nhiên)": ["Toán", "Vật Lí", "Hóa học", "Sinh học"],
+    "KHXH (Xã hội)": ["Toán", "Lịch sử", "Địa lí", "GDCD"],
+    "A00": ["Toán", "Vật Lí", "Hóa học"],
+    "A01": ["Toán", "Vật Lí", "Ngoại ngữ"],
+    "D01": ["Toán", "Ngữ văn", "Ngoại ngữ"],
+    "C00": ["Ngữ văn", "Lịch sử", "Địa lí"]
+}
 # Clean data
 # Thay NaN bằng 0 và đổi tên cột
 df.fillna(0, inplace = True)
@@ -39,7 +46,17 @@ so_thi_sinh = df.shape[0]
 so_mon_thi = df_no_MaNgoaiNgu.shape[1] - 1 
 co_diem = df[df["Toán"] > 0].shape[0]
 khong_diem = df[df["Toán"] == 0].shape[0]  
+# tạo bộ lọc môn
+st.subheader("Vui lòng chọn bộ môn cần lọc :")
+chon=st.selectbox("Chọn tổ hợp môn: ",list(tohop_dict.keys()))
+if chon:
+    subjects = tohop_dict[chon]
+    filtered_df = df.copy()
+    for subj in subjects:
+        filtered_df = filtered_df[filtered_df[subj] > 0]
 
+    st.success(f"Tìm thấy {len(filtered_df)} học sinh có đầy đủ điểm tổ hợp {chon}")
+    st.dataframe(filtered_df[["SBD"] + subjects], use_container_width=True)
 # define class for styling
 st.markdown("""
 <style>
